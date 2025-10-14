@@ -4,6 +4,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import java.io.IOException;
+
 
 public class LoginForm {
     @FXML
@@ -18,9 +23,27 @@ public class LoginForm {
         String password = passwordField.getText();
 
         if ("admin".equals(username) && "1234".equals(password)) {
-            welcomeText.setText("Login successful!");
+            try {
+
+                FXMLLoader fxmlLoader = new FXMLLoader(
+                        getClass().getResource("/com/example/budgetwolt2/main-form.fxml")
+                );
+
+                Scene scene = new Scene(fxmlLoader.load());
+                Stage stage = (Stage) usernameField.getScene().getWindow();
+
+                stage.setScene(scene);
+                stage.setTitle("Main Form");
+                stage.show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                welcomeText.setText("Error loading Main Form!");
+            }
+
         } else {
-            welcomeText.setText("Password incorrect!A");
+            welcomeText.setText("Password incorrect!");
         }
     }
+
 }
