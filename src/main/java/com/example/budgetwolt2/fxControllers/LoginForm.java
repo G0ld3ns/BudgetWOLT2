@@ -1,5 +1,6 @@
 package com.example.budgetwolt2.fxControllers;
 
+import jakarta.persistence.Persistence;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -7,6 +8,8 @@ import javafx.scene.control.Label;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jakarta.persistence.EntityManagerFactory;
+
 import java.io.IOException;
 
 
@@ -17,6 +20,8 @@ public class LoginForm {
     public TextField usernameField;
     @FXML
     public PasswordField passwordField;
+
+    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("kurs");
 
     public void validateAndLoad() {
         String username = usernameField.getText();
