@@ -9,12 +9,8 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // Load the login FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/com/example/budgetwolt2/login-form.fxml")
-        );
-
-        Scene scene = new Scene(fxmlLoader.load(), 400, 300);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/budgetwolt2/login-form.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Login");
         stage.setScene(scene);
         stage.show();
