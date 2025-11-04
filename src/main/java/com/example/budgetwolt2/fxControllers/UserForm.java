@@ -58,6 +58,8 @@ public class UserForm implements Initializable {
     public DatePicker driverBirth;
     @FXML
     public ComboBox<VehicleType> vehicleField;
+    @FXML
+    public TextField driverAddressField;
 
     private EntityManagerFactory entityManagerFactory;
     private GenericHibernate genericHibernate;
@@ -110,11 +112,11 @@ public class UserForm implements Initializable {
             BasicUser basicUser = new BasicUser(loginField.getText(), passwordField.getText(), nameField.getText(), surnameField.getText(), phoneField.getText(), addressField.getText());
             genericHibernate.create(basicUser);
         }else if  (restaurantRadio.isSelected()) {
-            Restaurant restaurant = new Restaurant(loginField.getText(), passwordField.getText(), nameField.getText(), surnameField.getText(), phoneField.getText(),  restaurantNameField.getText(), addressField.getText(), cuisineType.getValue(), Double.parseDouble(deliveryFee.getText()), LocalTime.parse(openingTime.getText()), LocalTime.parse(closingTime.getText()));
+            Restaurant restaurant = new Restaurant(loginField.getText(), passwordField.getText(), nameField.getText(), surnameField.getText(), phoneField.getText(), restaurantAddressField.getText(), restaurantNameField.getText(),  cuisineType.getValue(), Double.parseDouble(deliveryFee.getText()), LocalTime.parse(openingTime.getText()), LocalTime.parse(closingTime.getText()));
             genericHibernate.create(restaurant);
         }
         else if  (driverRadio.isSelected()) {
-            Driver driver = new Driver(loginField.getText(), passwordField.getText(), nameField.getText(), surnameField.getText(), phoneField.getText(), addressField.getText(), driverBirth.getValue(), vehicleField.getValue());
+            Driver driver = new Driver(loginField.getText(), passwordField.getText(), nameField.getText(), surnameField.getText(), phoneField.getText(), driverAddressField.getText(), driverBirth.getValue(), vehicleField.getValue());
             genericHibernate.create(driver);
         }
     }

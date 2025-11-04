@@ -16,26 +16,24 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 
-public class Restaurant extends BasicUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
+public class Restaurant extends User {
+    //private String name;
     private String address;
     private String restaurantName;
-    private String phone;
-    private String email;
     @Enumerated(EnumType.STRING)
     private CuisineType cuisineType;
     private double deliveryFee;
     private LocalTime openingTime;
     private LocalTime closingTime;
-    @OneToMany
-    private List<Cuisine> menuItems;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FoodOrder> foodOrders;
+    @OneToMany(mappedBy = "restaurantMenu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Cuisine> restaurantsMenuItems;
 
 
     public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address, String restaurantName, CuisineType cuisineType, double deliveryFee,  LocalTime closingTime, LocalTime openingTime) {
-        super(login, password, name, surname, phoneNumber, address);
+        super(login, password, name, surname, phoneNumber);
+        this.address = address;
         this.restaurantName = restaurantName;
         this.closingTime = closingTime;
         this.openingTime = openingTime;
@@ -75,21 +73,6 @@ public class Restaurant extends BasicUser {
         this.restaurantName = restaurantName;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public CuisineType getCuisineType() {
         return cuisineType;
@@ -123,11 +106,4 @@ public class Restaurant extends BasicUser {
         this.closingTime = closingTime;
     }
 
-    public List<Cuisine> getMenuItems() {
-        return menuItems;
-    }
-
-    public void setMenuItems(List<Cuisine> menuItems) {
-        this.menuItems = menuItems;
-    }
 }

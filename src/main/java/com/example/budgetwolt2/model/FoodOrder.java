@@ -25,6 +25,8 @@ public class FoodOrder {
     private List<Cuisine> cuisineList;
     @OneToOne
     private Chat chat;
+    @ManyToOne
+    private Restaurant restaurant;
 
     public int getId() {
         return id;

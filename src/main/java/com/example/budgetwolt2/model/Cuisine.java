@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Cuisine {
+public class Cuisine implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -23,6 +24,17 @@ public class Cuisine {
     protected boolean vegan = false;
     @ManyToMany (mappedBy = "cuisineList",  cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
     private List<FoodOrder> orderList;
+    @ManyToOne
+    private Restaurant restaurantMenu;
+
+    public Cuisine(String name, Double price, boolean spicy, boolean vegan) {
+        this.name = name;
+        this.price = price;
+        this.spicy = spicy;
+        this.vegan = vegan;
+    }
+
+
 
     public int getId() {
         return id;
@@ -72,5 +84,9 @@ public class Cuisine {
     public void setOrderList(List<FoodOrder> orderList) {
         this.orderList = orderList;
     }
+
+    @Override
+    public String toString() {return id + ": " + name + ":" + price + "$:" +  spicy + ":" + vegan;}
+
 }
 

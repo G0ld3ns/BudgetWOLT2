@@ -31,8 +31,8 @@
       </VBox>
       <VBox fx:id="RestaurantPane" layoutX="487.0" layoutY="65.0" prefHeight="460.0" prefWidth="483.0">
          <children>
-            <TextField fx:id="restaurantNameField" prefHeight="25.0" prefWidth="439.0" promptText="Restaurant name:" />
             <TextField fx:id="restaurantAddressField" layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="439.0" promptText="Restaurant address:" />
+            <TextField fx:id="restaurantNameField" prefHeight="25.0" prefWidth="439.0" promptText="Restaurant name:" />
             <ComboBox fx:id="cuisineType" prefWidth="150.0" promptText="Cuisine type" />
             <TextField fx:id="deliveryFee" layoutX="10.0" layoutY="85.0" prefHeight="25.0" prefWidth="439.0" promptText="Delivery fees:" />
             <TextField fx:id="openingTime" layoutX="10.0" layoutY="135.0" prefHeight="25.0" prefWidth="439.0" promptText="Opening time (HH:mm):" />
@@ -41,6 +41,7 @@
       </VBox>
       <VBox fx:id="driverPane" layoutX="492.0" layoutY="67.0" prefHeight="450.0" prefWidth="474.0">
          <children>
+            <TextField fx:id="driverAddressField" prefHeight="25.0" prefWidth="439.0" promptText="Driver address:" />
             <DatePicker fx:id="driverBirth" promptText="Birth date:" />
             <ComboBox fx:id="vehicleField" prefWidth="150.0" promptText="Vehicle type" />
          </children>
