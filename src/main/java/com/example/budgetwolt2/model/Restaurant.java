@@ -28,7 +28,7 @@ public class Restaurant extends User {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FoodOrder> foodOrders;
     @OneToMany(mappedBy = "restaurantMenu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Cuisine> restaurantsMenuItems;
+    private List<Cuisine> menu;
 
 
     public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address, String restaurantName, CuisineType cuisineType, double deliveryFee,  LocalTime closingTime, LocalTime openingTime) {
@@ -106,4 +106,8 @@ public class Restaurant extends User {
         this.closingTime = closingTime;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -18,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
@@ -85,6 +86,38 @@ public class MainForm implements Initializable {
     public CheckBox spicyCheckBox;
     @FXML
     public CheckBox veganCheckBox;
+    
+    //Orders management Tab
+    @FXML
+    public ListView<FoodOrder> orderList;
+    @FXML
+    public ComboBox<BasicUser> clientList;
+    @FXML
+    public TextField titleField;
+    @FXML
+    public TextField priceField;
+    @FXML
+    public ComboBox<Restaurant> restaurantField;
+    @FXML
+    public ComboBox<OrderStatus> orderStatusField;
+    @FXML
+    public ComboBox<OrderStatus> filterStatus;
+    @FXML
+    public ComboBox<BasicUser> filterClients;
+    @FXML
+    public DatePicker filterDateCreated;
+    @FXML
+    public DatePicker filterDateUpdate;
+    @FXML
+    public ListView<Cuisine> orderFoodList;
+    @FXML
+    public ListView<Restaurant> restaurantList;
+    @FXML
+    public Button createOrderID;
+    @FXML
+    public Button updateOrderId;
+    @FXML
+    public Button deleteOrderID;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -268,19 +301,25 @@ public class MainForm implements Initializable {
         this.customHibernate = new CustomHibernate(entityManagerFactory);
         this.genericHibernate = new GenericHibernate(entityManagerFactory);
         setUserFormVisibility();
-
+        reloadTableData();
     }
 
     private void setUserFormVisibility() {
-        if (currentUser instanceof Restaurant){
+        if (currentUser instanceof BasicUser){
             tabPane.getTabs().remove(userTab);
+            tabPane.getTabs().remove(menuTab);
+            updateOrderId.setDisable(true);
+            deleteOrderID.setDisable(true);
         }
-        else if (currentUser instanceof BasicUser){
+            else if (currentUser instanceof Restaurant){
+                tabPane.getTabs().remove(userTab);
+            }
+        else if (currentUser instanceof Driver){
             tabPane.getTabs().remove(userTab);
             tabPane.getTabs().remove(menuTab);
-        }else if (currentUser instanceof Driver){
-            tabPane.getTabs().remove(userTab);
-            tabPane.getTabs().remove(menuTab);
+            createOrderID.setDisable(true);
+            updateOrderId.setDisable(true);
+            deleteOrderID.setDisable(true);
         }else if (currentUser instanceof User) {
             //nebutina kazko cia idunno
         }
@@ -328,27 +367,67 @@ public class MainForm implements Initializable {
             }
             userTable.getItems().addAll(data);
         } else if (oerderTab.isSelected()) {
+            clearAllOrderFields();
             List<FoodOrder> foodOrders = getFoodOrders();
+            orderList.getItems().addAll(foodOrders);
+            if (currentUser instanceof BasicUser basicUser) {
+                clientList.getItems().add(basicUser);
+                clientList.getSelectionModel().select(basicUser);
+                clientList.setDisable(true);
+            }
+            else {
+                clientList.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
+                clientList.setDisable(false);
+            }
+            if (currentUser instanceof Restaurant restaurant) {
+                restaurantField.getItems().add(restaurant);
+                restaurantField.getSelectionModel().select(restaurant);
+                restaurantField.setDisable(true);
+            } else {
+                restaurantField.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
+                restaurantField.setDisable(false);
+            }
+            orderStatusField.getItems().addAll(OrderStatus.values());
+
         } else if (menuTab.isSelected()) {
-            List<Cuisine> cuisineList = getMenuItems();
-            menuListField.getItems().setAll(cuisineList);
+            clearAllMenuFields();
+
+            if (currentUser instanceof Restaurant restaurant) {
+                restaurantList.getItems().add(restaurant);
+                restaurantList.getSelectionModel().select(restaurant);
+                restaurantList.setDisable(true);
+
+                menuListField.getItems().addAll(
+                        customHibernate.getRestourantCuisine(restaurant)
+                );
+            } else {
+                restaurantList.getItems().addAll(
+                        customHibernate.getAllRecords(Restaurant.class)
+                );
+                restaurantList.setDisable(false);
+            }
         }
     }
 
-    private List<FoodOrder> getFoodOrders (){
-        if (currentUser instanceof Restaurant) {
-            return customHibernate.getRestourantOrders((Restaurant) currentUser);
-        } else {
-            return customHibernate.getAllRecords(FoodOrder.class);
-        }
+    private void clearAllOrderFields (){
+        orderList.getItems().clear();
+        clientList.getItems().clear();
+        orderStatusField.getItems().clear();
+        restaurantField.getItems().clear();
+        titleField.clear();
+        priceField.clear();
+        restaurantList.getItems().clear();
+        orderStatusField.getItems().clear();
     }
 
-    private List<Cuisine> getMenuItems (){
-        if (currentUser instanceof Restaurant) {
-            return customHibernate.getRestourantMenu((Restaurant) currentUser);
-        } else {
-            return customHibernate.getAllRecords(Cuisine.class);
-        }
+    private void clearAllMenuFields (){
+        menuListField.getItems().clear();
+        menuFoodNameField.clear();
+        menuFoodNameField1.clear();
+        restaurantField.getItems().clear();
+        spicyCheckBox.setSelected(false);
+        veganCheckBox.setSelected(false);
+        restaurantList.getItems().clear();
     }
 
     public void openUserForm() throws IOException {
@@ -363,15 +442,143 @@ public class MainForm implements Initializable {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
+
     }
 
 
-    public void createCuisine() {
-        Cuisine cuisine = new Cuisine(menuFoodNameField.getText(), Double.parseDouble(menuFoodNameField1.getText()), spicyCheckBox.isSelected(), veganCheckBox.isSelected());
+
+
+    //Order Tab
+    private List<FoodOrder> getFoodOrders (){
         if (currentUser instanceof Restaurant restaurant) {
-            cuisine.restaurantMenu(restaurant);
+            return customHibernate.getRestourantOrders(restaurant);
         }
-        genericHibernate.create(cuisine);
+        if (currentUser instanceof BasicUser basicUser) {
+            List<FoodOrder> allOrders = customHibernate.getAllRecords(FoodOrder.class);
+            return allOrders.stream()
+                    .filter(o -> o.getBuyer() != null
+                            && o.getBuyer().getId() == basicUser.getId())
+                    .toList();
+        }
+        return customHibernate.getAllRecords(FoodOrder.class);
+    }
+
+    public static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+
+    public void createOrder() {
+        if (isNumeric(priceField.getText())) {
+            FoodOrder foodOrder = new FoodOrder(titleField.getText(), Double.parseDouble(priceField.getText()), clientList.getValue(),orderFoodList.getSelectionModel().getSelectedItems(), restaurantField.getValue(),  orderStatusField.getValue());
+            customHibernate.create(foodOrder);
+            reloadTableData();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!");
+            alert.setHeaderText("Wrong value");
+            alert.setContentText("Value in field PRICE should be a number");
+
+            alert.showAndWait();
+        }
+    }
+
+    public void updateOrder() {
+        FoodOrder foodOrder = orderList.getSelectionModel().getSelectedItem();
+        foodOrder.setRestaurant(restaurantField.getSelectionModel().getSelectedItem());
+        foodOrder.setName(titleField.getText());
+        foodOrder.setPrice(Double.valueOf(priceField.getText()));
+        foodOrder.setOrderStatus(orderStatusField.getValue());
+        foodOrder.setBuyer(clientList.getSelectionModel().getSelectedItem());
+
+        customHibernate.update(foodOrder);
         reloadTableData();
     }
+
+    public void deleteOrder() {
+        FoodOrder selectedOrder = orderList.getSelectionModel().getSelectedItem();
+        customHibernate.delete(FoodOrder.class, selectedOrder.getId());
+        orderList.getItems().clear();
+        orderList.getItems().addAll(customHibernate.getAllRecords(FoodOrder.class));
+        reloadTableData();
+    }
+
+    public void loadOrderInfo() {
+        FoodOrder selectedOrder = orderList.getSelectionModel().getSelectedItem();
+        clientList.getItems().stream().filter(c->c.getId() == selectedOrder.getBuyer().getId()).findFirst().ifPresent(u->clientList.getSelectionModel().select(u));
+        titleField.setText(selectedOrder.getName());
+        priceField.setText(selectedOrder.getPrice().toString());
+        restaurantField.getItems().stream().filter(r->r.getId() == selectedOrder.getRestaurant().getId()).findFirst().ifPresent(u->restaurantField.getSelectionModel().select(u));
+        orderStatusField.getItems()
+                .stream()
+                .filter(r -> r == selectedOrder.getOrderStatus())
+                .findFirst()
+                .ifPresent(v -> orderStatusField.getSelectionModel().select(v));
+       // disableFoodOrderFields();
+    }
+
+    private void disableFoodOrderFields () {
+        if (orderStatusField.getSelectionModel().getSelectedItem() == OrderStatus.COMPLETED) {
+            clientList.setDisable(true);
+            priceField.setDisable(true);
+            restaurantField.setDisable(true);
+            titleField.setDisable(true);
+        }
+    }
+
+    public void loadRestaurantMenuForOrder() {
+        orderFoodList.getItems().clear();
+        orderFoodList.getItems().addAll(customHibernate.getRestourantCuisine(restaurantField.getSelectionModel().getSelectedItem()));
+    }
+
+    public void filterOrders(ActionEvent actionEvent) {
+
+    }
+
+    public void createCuisine() {
+        Cuisine cuisine = new Cuisine(menuFoodNameField.getText(), Double.parseDouble(menuFoodNameField1.getText()), spicyCheckBox.isSelected(), veganCheckBox.isSelected(), restaurantList.getSelectionModel().getSelectedItem());
+        customHibernate.create(cuisine);
+        reloadTableData();
+    }
+
+    public void updateCuisine() {
+        Cuisine cuisine = menuListField.getSelectionModel().getSelectedItem();
+        cuisine.setName(menuFoodNameField.getText());
+        cuisine.setPrice(Double.valueOf(menuFoodNameField1.getText()));
+        cuisine.setSpicy(spicyCheckBox.isSelected());
+        cuisine.setVegan(veganCheckBox.isSelected());
+        customHibernate.update(cuisine);
+        reloadTableData();
+
+    }
+
+    public void deleteCuisine() {
+        Cuisine selectedCuisine = menuListField.getSelectionModel().getSelectedItem();
+        customHibernate.delete(Cuisine.class, selectedCuisine.getId());
+        menuListField.getItems().clear();
+        menuListField.getItems().addAll(customHibernate.getAllRecords(Cuisine.class));
+        reloadTableData();
+
+    }
+
+    public void loadRestaurantMenu() {
+        menuListField.getItems().clear();
+        menuListField.getItems().addAll(customHibernate.getRestourantCuisine(restaurantList.getSelectionModel().getSelectedItem()));
+    }
+
+
+    public void loadMenuInfo() {
+        Cuisine selectedMenu = menuListField.getSelectionModel().getSelectedItem();
+        menuFoodNameField.setText(selectedMenu.getName());
+        menuFoodNameField1.setText(selectedMenu.getPrice().toString());
+        spicyCheckBox.setSelected(selectedMenu.isSpicy());
+        veganCheckBox.setSelected(selectedMenu.isVegan());
+
+    }
+
 }

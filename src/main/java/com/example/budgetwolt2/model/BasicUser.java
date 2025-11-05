@@ -68,4 +68,9 @@ public class BasicUser extends User{
     public void setFeedback(List<Review> feedback) {
         this.feedback = feedback;
     }
+
+    @Override
+    public String toString() {
+        return name + " " + surname;
+    }
 }

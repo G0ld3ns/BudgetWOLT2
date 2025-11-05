@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.query.Order;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -27,6 +30,27 @@ public class FoodOrder {
     private Chat chat;
     @ManyToOne
     private Restaurant restaurant;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+    private LocalDate dateCreated;
+    private LocalDate dateUpdated;
+
+    public FoodOrder(String name, Double price, BasicUser buyer, Restaurant restaurant, OrderStatus orderStatus) {
+        this.name = name;
+        this.price = price;
+        this.buyer = buyer;
+        this.restaurant = restaurant;
+        this.orderStatus = orderStatus;
+    }
+
+    public FoodOrder(String name, Double price, BasicUser buyer, List<Cuisine> cuisineList, Restaurant restaurant, OrderStatus orderStatus) {
+        this.name = name;
+        this.price = price;
+        this.buyer = buyer;
+        this.cuisineList = cuisineList;
+        this.restaurant = restaurant;
+        this.orderStatus = orderStatus;
+    }
 
     public int getId() {
         return id;
@@ -66,5 +90,12 @@ public class FoodOrder {
 
     public void setCuisineList(List<Cuisine> cuisineList) {
         this.cuisineList = cuisineList;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return buyer + "'s ORDER: " +name + " - "  + price + "$ (From: " + restaurant + ")" + " -" + orderStatus + "-";
     }
 }

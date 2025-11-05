@@ -1,15 +1,11 @@
 package com.example.budgetwolt2.hibernateControl;
 
-import com.example.budgetwolt2.model.Cuisine;
-import com.example.budgetwolt2.model.FoodOrder;
-import com.example.budgetwolt2.model.Restaurant;
-import com.example.budgetwolt2.model.User;
+import com.example.budgetwolt2.model.*;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +46,7 @@ public class CustomHibernate extends GenericHibernate{
         return orders;
     }
 
-    public List<Cuisine> getRestourantMenu(Restaurant restaurant) {
+    public List<Cuisine> getRestourantCuisine(Restaurant restaurant) {
         List<Cuisine> menu = new ArrayList<>();
         try {
             entityManager = entityManagerFactory.createEntityManager();
@@ -64,5 +60,8 @@ public class CustomHibernate extends GenericHibernate{
         } catch (Exception e){}
         return menu;
     }
+
+
+
 
 }

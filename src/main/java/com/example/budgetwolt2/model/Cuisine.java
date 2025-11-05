@@ -27,14 +27,13 @@ public class Cuisine implements Serializable {
     @ManyToOne
     private Restaurant restaurantMenu;
 
-    public Cuisine(String name, Double price, boolean spicy, boolean vegan) {
+    public Cuisine(String name, Double price, boolean spicy, boolean vegan, Restaurant restaurantMenu) {
         this.name = name;
         this.price = price;
         this.spicy = spicy;
         this.vegan = vegan;
+        this.restaurantMenu = restaurantMenu;
     }
-
-
 
     public int getId() {
         return id;
