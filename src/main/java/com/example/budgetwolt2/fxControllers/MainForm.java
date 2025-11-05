@@ -292,8 +292,30 @@ public class MainForm implements Initializable {
                 customHibernate.update(driver);
             }
         });
-
+        initActionColumn();
     }
+
+    private void initActionColumn() {
+        actionCol.setCellFactory(col -> new TableCell<UserTableParameters, Void>() {
+
+            private final Button deleteBtn = new Button("Delete");
+
+            {
+                deleteBtn.setOnAction(event -> {
+                    UserTableParameters row = getTableView().getItems().get(getIndex());
+                    genericHibernate.delete(User.class, row.getId());
+                    getTableView().getItems().remove(row);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : deleteBtn);
+            }
+        });
+    }
+
 
     public void setData(EntityManagerFactory entityManagerFactory, User user) {
         this.entityManagerFactory = entityManagerFactory;

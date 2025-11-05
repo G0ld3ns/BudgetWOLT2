@@ -115,4 +115,33 @@ public class GenericHibernate {
         return list;
     }
 
+    public <T> void deleteAlso(Class<T> entityClass, int id) {
+        EntityManager entityManager = null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
+
+            T entity = entityManager.find(entityClass, id);
+            entityManager.remove(entity);
+
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            if (entityManager != null &&
+                    entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!");
+            alert.setHeaderText("Error deleting entity");
+            alert.setContentText("There was an error while trying to delete your entity:\n"
+                    + e.getMessage());
+            alert.showAndWait();
+
+        } finally {
+            if (entityManager != null) entityManager.close();
+        }
+    }
+
 }
