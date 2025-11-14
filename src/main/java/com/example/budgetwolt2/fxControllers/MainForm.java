@@ -118,6 +118,14 @@ public class MainForm implements Initializable {
     public Button updateOrderId;
     @FXML
     public Button deleteOrderID;
+    
+    //chat
+    @FXML
+    public Tab chatTab;
+    @FXML
+    public ListView<Chat> allChat;
+    @FXML
+    public ListView<Review> chtMessagesList;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -428,6 +436,9 @@ public class MainForm implements Initializable {
                 );
                 restaurantList.setDisable(false);
             }
+        } else if (chatTab.isSelected()) {
+                allChat.getItems().addAll(customHibernate.getAllRecords(Chat.class));
+
         }
     }
 
@@ -603,4 +614,25 @@ public class MainForm implements Initializable {
 
     }
 
+    public void loadChatMessages() {
+        chtMessagesList.getItems().addAll((Review) customHibernate.getChatMessages(allChat.getSelectionModel().getSelectedItem()));
+    }
+
+    public void deleteChat() {
+    }
+
+    public void deleteMessage() {
+    }
+
+    public void loadChatForm() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/budgetwolt2/chat-form.fxml"));
+        Parent parent = fxmlLoader.load();
+        UserForm userForm = fxmlLoader.getController();
+        userForm.setData(entityManagerFactory);
+        Scene scene = new Scene(parent);
+        Stage stage = new Stage();
+        stage.setTitle("Chat");
+        stage.setScene(scene);
+        stage.show();
+    }
 }

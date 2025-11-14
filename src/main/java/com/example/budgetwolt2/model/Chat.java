@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,7 +25,15 @@ public class Chat {
     private LocalDate dateCreated;
     @OneToOne(mappedBy = "chat", cascade = CascadeType.ALL)
     private FoodOrder foodOrder;
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> messages;
 
+    public Chat(String name, FoodOrder foodOrder) {
+        this.name = name;
+        this.foodOrder = foodOrder;
+        this.dateCreated = LocalDate.now();
+        this.messages = new ArrayList<>();
+    }
 
     public int getId() {
         return id;
