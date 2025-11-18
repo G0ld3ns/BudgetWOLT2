@@ -21,17 +21,18 @@ public class Review {
     private String reviewText;
     private LocalDate dateCreated;
     @ManyToOne
-    private BasicUser commentOwner;
+    private User commentOwner;
     @ManyToOne
-    private BasicUser feedBack;
+    private User feedBack;
     @ManyToOne
     private Chat chat;
 
 
-    public Review(String reviewText, BasicUser commentOwner, Chat chat) {
+    public Review(String reviewText, User commentOwner, Chat chat) {
         this.reviewText = reviewText;
         this.commentOwner = commentOwner;
         this.chat = chat;
+        this.dateCreated = LocalDate.now();
     }
 
     public int getId() {
@@ -66,19 +67,24 @@ public class Review {
         this.dateCreated = dateCreated;
     }
 
-    public BasicUser getCommentOwner() {
+    public User getCommentOwner() {
         return commentOwner;
     }
 
-    public void setCommentOwner(BasicUser commentOwner) {
+    public void setCommentOwner(User commentOwner) {
         this.commentOwner = commentOwner;
     }
 
-    public BasicUser getFeedBack() {
+    public User getFeedBack() {
         return feedBack;
     }
 
-    public void setFeedBack(BasicUser feedBack) {
+    public void setFeedBack(User feedBack) {
         this.feedBack = feedBack;
+    }
+
+    @Override
+    public String toString() {
+        return commentOwner.getLogin() + ": " + reviewText;
     }
 }

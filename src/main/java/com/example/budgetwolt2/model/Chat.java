@@ -67,5 +67,8 @@ public class Chat {
         this.dateCreated = dateCreated;
     }
 
-
+    @Override
+    public String toString() {
+        return name;
+    }
 }

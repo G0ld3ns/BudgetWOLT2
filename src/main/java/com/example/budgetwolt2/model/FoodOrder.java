@@ -41,6 +41,8 @@ public class FoodOrder {
         this.buyer = buyer;
         this.restaurant = restaurant;
         this.orderStatus = orderStatus;
+        this.dateCreated = LocalDate.now();
+        this.dateUpdated = LocalDate.now();
     }
 
     public FoodOrder(String name, Double price, BasicUser buyer, List<Cuisine> cuisineList, Restaurant restaurant, OrderStatus orderStatus) {

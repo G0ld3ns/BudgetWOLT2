@@ -136,7 +136,7 @@ public class MainForm implements Initializable {
     private CustomHibernate customHibernate;
     private GenericHibernate genericHibernate;
     private User currentUser;
-
+    private FoodOrder currentFoodOrder;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         userTable.setEditable(true);
@@ -301,6 +301,9 @@ public class MainForm implements Initializable {
             }
         });
         initActionColumn();
+        allChat.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldChat, newChat) -> loadChatMessages()
+        );
     }
 
     private void initActionColumn() {
@@ -338,15 +341,18 @@ public class MainForm implements Initializable {
         if (currentUser instanceof BasicUser){
             tabPane.getTabs().remove(userTab);
             tabPane.getTabs().remove(menuTab);
+            tabPane.getTabs().remove(chatTab);
             updateOrderId.setDisable(true);
             deleteOrderID.setDisable(true);
         }
             else if (currentUser instanceof Restaurant){
                 tabPane.getTabs().remove(userTab);
+                tabPane.getTabs().remove(chatTab);
             }
         else if (currentUser instanceof Driver){
             tabPane.getTabs().remove(userTab);
             tabPane.getTabs().remove(menuTab);
+            tabPane.getTabs().remove(chatTab);
             createOrderID.setDisable(true);
             updateOrderId.setDisable(true);
             deleteOrderID.setDisable(true);
@@ -437,7 +443,12 @@ public class MainForm implements Initializable {
                 restaurantList.setDisable(false);
             }
         } else if (chatTab.isSelected()) {
-                allChat.getItems().addAll(customHibernate.getAllRecords(Chat.class));
+            allChat.getItems().clear();
+            chtMessagesList.getItems().clear();
+
+            allChat.getItems().addAll(
+                    customHibernate.getAllRecords(Chat.class)
+            );
 
         }
     }
@@ -615,7 +626,32 @@ public class MainForm implements Initializable {
     }
 
     public void loadChatMessages() {
-        chtMessagesList.getItems().addAll((Review) customHibernate.getChatMessages(allChat.getSelectionModel().getSelectedItem()));
+        Chat selected = allChat.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            return;
+        }
+
+        chtMessagesList.getItems().clear();
+
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            Chat chat = em.find(Chat.class, selected.getId());
+            if (chat == null) {
+                return;
+            }
+
+            List<Review> messages = em.createQuery(
+                            "select r from Review r " +
+                                    "where r.chat = :chat " +
+                                    "order by r.dateCreated, r.id",
+                            Review.class
+                    ).setParameter("chat", chat)
+                    .getResultList();
+
+            chtMessagesList.getItems().addAll(messages);
+        } finally {
+            em.close();
+        }
     }
 
     public void deleteChat() {
@@ -625,10 +661,25 @@ public class MainForm implements Initializable {
     }
 
     public void loadChatForm() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/budgetwolt2/chat-form.fxml"));
+        FoodOrder selectedOrder = orderList.getSelectionModel().getSelectedItem();
+        if (selectedOrder == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No order selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select an order first.");
+            alert.showAndWait();
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                getClass().getResource("/com/example/budgetwolt2/chat-form.fxml")
+        );
         Parent parent = fxmlLoader.load();
-        UserForm userForm = fxmlLoader.getController();
-        userForm.setData(entityManagerFactory);
+
+        ChatForm chatForm = fxmlLoader.getController();
+
+        chatForm.setData(entityManagerFactory, currentUser, selectedOrder);
+
         Scene scene = new Scene(parent);
         Stage stage = new Stage();
         stage.setTitle("Chat");

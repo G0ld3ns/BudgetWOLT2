@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -37,6 +38,8 @@ public class User implements Serializable {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
+        this.dateCreated = LocalDateTime.now();
+        this.dateUpdated = LocalDateTime.now();
     }
 
 
