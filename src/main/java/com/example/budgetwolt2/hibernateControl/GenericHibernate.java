@@ -97,21 +97,31 @@ public class GenericHibernate {
 
     public <T> List<T> getAllRecords(Class<T> entityClass) {
         List<T> list = new ArrayList<>();
+        EntityManager em = null;
+
         try {
-            entityManager = entityManagerFactory.createEntityManager();
-            entityManager.getTransaction().begin();
-            CriteriaQuery query = entityManager.getCriteriaBuilder().createQuery();
+            em = entityManagerFactory.createEntityManager();
+
+            // no transaction needed for read-only query
+            CriteriaQuery<T> query = em.getCriteriaBuilder().createQuery(entityClass);
             query.select(query.from(entityClass));
-            Query q = entityManager.createQuery(query);
-            list = q.getResultList();
+
+            list = em.createQuery(query).getResultList();
+
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error!");
             alert.setHeaderText("Error getting entity");
-            alert.setContentText("There was an error while trying to get all records of Your entity:\n" + e.getMessage());
+            alert.setContentText("There was an error while trying to get all records of Your entity:\n"
+                    + e.getMessage());
 
             alert.showAndWait();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
+
         return list;
     }
 

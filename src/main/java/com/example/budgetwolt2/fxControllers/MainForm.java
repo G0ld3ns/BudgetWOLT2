@@ -127,7 +127,7 @@ public class MainForm implements Initializable {
     @FXML
     public ListView<Review> chtMessagesList;
     @FXML
-    public ComboBox filterRestaurant;
+    public ComboBox<Restaurant> filterRestaurant;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -139,6 +139,7 @@ public class MainForm implements Initializable {
     private GenericHibernate genericHibernate;
     private User currentUser;
     private FoodOrder currentFoodOrder;
+    private List<FoodOrder> baseOrders;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         userTable.setEditable(true);
@@ -280,7 +281,7 @@ public class MainForm implements Initializable {
         // Opening time (only Restaurant) – display only for now
         openingTimeCol.setCellValueFactory(new PropertyValueFactory<>("openingTime"));
 
-        // Birth date (only Driver) – display only
+        //Birthdate (only Driver) – display only
         bDateCol.setCellValueFactory(new PropertyValueFactory<>("bDate"));
 
         // Vehicle type (only Driver, enum + combobox)
@@ -365,10 +366,25 @@ public class MainForm implements Initializable {
             titleField.setDisable(true);
             priceField.setDisable(true);
             orderStatusField.setVisible(false);
+            //filters
+            filterClients.setVisible(false);
+            filterClients.setManaged(false);
+
+            if (filterRestaurant != null) {
+                filterRestaurant.setVisible(true);
+                filterRestaurant.setManaged(true);
+            }
         }
             else if (currentUser instanceof Restaurant){
                 tabPane.getTabs().remove(userTab);
                 tabPane.getTabs().remove(chatTab);
+
+            if (filterRestaurant != null) {
+                filterRestaurant.setVisible(false);
+                filterRestaurant.setManaged(false);
+            }
+            filterClients.setVisible(true);
+            filterClients.setManaged(true);
             }
         else if (currentUser instanceof Driver){
             tabPane.getTabs().remove(userTab);
@@ -425,8 +441,9 @@ public class MainForm implements Initializable {
             userTable.getItems().addAll(data);
         } else if (oerderTab.isSelected()) {
             clearAllOrderFields();
+            baseOrders = getFoodOrders();
             List<FoodOrder> foodOrders = getFoodOrders();
-            orderList.getItems().addAll(foodOrders);
+            orderList.getItems().setAll(baseOrders);
             if (currentUser instanceof BasicUser basicUser) {
                 clientList.getItems().add(basicUser);
                 clientList.getSelectionModel().select(basicUser);
@@ -445,6 +462,14 @@ public class MainForm implements Initializable {
                 restaurantField.setDisable(false);
             }
             orderStatusField.getItems().addAll(OrderStatus.values());
+
+
+            //filters
+            filterStatus.getItems().addAll(OrderStatus.values());
+            filterClients.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
+            if (filterRestaurant != null) {
+                filterRestaurant.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
+            }
 
         } else if (menuTab.isSelected()) {
             clearAllMenuFields();
@@ -483,6 +508,13 @@ public class MainForm implements Initializable {
         priceField.clear();
         restaurantList.getItems().clear();
         orderStatusField.getItems().clear();
+
+        //filtram
+        filterStatus.getItems().clear();
+        filterClients.getItems().clear();
+        if (filterRestaurant != null) {
+            filterRestaurant.getItems().clear();
+        }
     }
 
     private void clearAllMenuFields (){
@@ -603,7 +635,24 @@ public class MainForm implements Initializable {
         priceField.clear();
     }
 
-    public void filterOrders(ActionEvent actionEvent) {
+    public void filterOrders() {
+        if (baseOrders == null) {
+            baseOrders = getFoodOrders();
+        }
+
+        OrderStatus selectedStatus = filterStatus.getValue();
+        BasicUser selectedClient = filterClients.getValue();
+        Restaurant selectedRestaurant = (filterRestaurant != null) ? filterRestaurant.getValue() : null;
+
+        List<FoodOrder> filtered = baseOrders.stream()
+                .filter(o -> selectedStatus == null || o.getOrderStatus() == selectedStatus)
+                .filter(o -> selectedClient == null ||
+                        (o.getBuyer() != null && o.getBuyer().getId() == selectedClient.getId()))
+                .filter(o -> selectedRestaurant == null ||
+                        (o.getRestaurant() != null && o.getRestaurant().getId() == selectedRestaurant.getId()))
+                .toList();
+
+        orderList.getItems().setAll(filtered);
 
     }
 
@@ -708,5 +757,16 @@ public class MainForm implements Initializable {
         stage.setTitle("Chat");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void resetFilters() {
+        filterStatus.getSelectionModel().clearSelection();
+        filterClients.getSelectionModel().clearSelection();
+        if (filterRestaurant != null) {
+            filterRestaurant.getSelectionModel().clearSelection();
+        }
+
+        // reload whole Orders tab state
+        reloadTableData();
     }
 }
