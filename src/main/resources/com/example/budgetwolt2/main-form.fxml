@@ -4,7 +4,6 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ContextMenu?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuItem?>
@@ -65,10 +64,9 @@
                         <ComboBox fx:id="orderStatusField" layoutX="433.0" layoutY="289.0" prefHeight="25.0" prefWidth="273.0" promptText="Order status:" />
                         <Label layoutX="14.0" layoutY="6.0" text="Fillter by:" />
                         <ComboBox fx:id="filterClients" layoutX="14.0" layoutY="67.0" onAction="#filterOrders" prefWidth="150.0" promptText="Clients" />
-                        <DatePicker fx:id="filterDateCreated" layoutX="174.0" layoutY="33.0" onAction="#filterOrders" promptText="Date from" />
-                        <DatePicker fx:id="filterDateUpdate" layoutX="174.0" layoutY="67.0" onAction="#filterOrders" promptText="Date to" />
                         <ListView fx:id="orderFoodList" layoutX="433.0" layoutY="332.0" prefHeight="195.0" prefWidth="274.0" />
                         <Button layoutX="769.0" layoutY="555.0" mnemonicParsing="false" onAction="#loadChatForm" prefHeight="25.0" prefWidth="269.0" text="View chat" />
+                        <ComboBox fx:id="filterRestaurant" layoutX="176.0" layoutY="33.0" onAction="#filterOrders" prefWidth="150.0" promptText="Status" />
                      </children>
                   </AnchorPane>
             </content>

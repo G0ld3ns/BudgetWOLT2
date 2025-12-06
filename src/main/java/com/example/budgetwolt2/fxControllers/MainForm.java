@@ -126,6 +126,8 @@ public class MainForm implements Initializable {
     public ListView<Chat> allChat;
     @FXML
     public ListView<Review> chtMessagesList;
+    @FXML
+    public ComboBox filterRestaurant;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -304,6 +306,22 @@ public class MainForm implements Initializable {
         allChat.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldChat, newChat) -> loadChatMessages()
         );
+
+        orderFoodList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        orderFoodList.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldCuisine, newCuisine) -> {
+                    if (newCuisine != null) {
+                        titleField.setText(newCuisine.getName());
+                        priceField.setText(String.valueOf(newCuisine.getPrice()));
+                    }
+                });
+
+        allChat.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldChat, newChat) -> loadChatMessages()
+        );
+
+
     }
 
     private void initActionColumn() {
@@ -344,6 +362,9 @@ public class MainForm implements Initializable {
             tabPane.getTabs().remove(chatTab);
             updateOrderId.setDisable(true);
             deleteOrderID.setDisable(true);
+            titleField.setDisable(true);
+            priceField.setDisable(true);
+            orderStatusField.setVisible(false);
         }
             else if (currentUser instanceof Restaurant){
                 tabPane.getTabs().remove(userTab);
@@ -578,6 +599,8 @@ public class MainForm implements Initializable {
     public void loadRestaurantMenuForOrder() {
         orderFoodList.getItems().clear();
         orderFoodList.getItems().addAll(customHibernate.getRestourantCuisine(restaurantField.getSelectionModel().getSelectedItem()));
+        titleField.clear();
+        priceField.clear();
     }
 
     public void filterOrders(ActionEvent actionEvent) {
