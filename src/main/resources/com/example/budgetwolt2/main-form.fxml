@@ -3,10 +3,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -91,33 +89,6 @@
                               <ListView fx:id="restaurantList" layoutX="175.0" layoutY="38.0" onMouseClicked="#loadRestaurantMenu" prefHeight="66.0" prefWidth="195.0" />
                            </children>
                         </AnchorPane>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-            <Tab fx:id="chatTab" text="Chat management">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="allChat" layoutX="14.0" layoutY="14.0" onMouseClicked="#loadChatMessages" prefHeight="589.0" prefWidth="298.0">
-                           <contextMenu>
-                              <ContextMenu>
-                                <items>
-                                  <MenuItem mnemonicParsing="false" onAction="#deleteChat" text="Delete chat" />
-                                </items>
-                              </ContextMenu>
-                           </contextMenu>
-                        </ListView>
-                        <ListView fx:id="chtMessagesList" layoutX="329.0" layoutY="14.0" prefHeight="595.0" prefWidth="345.0">
-                           <contextMenu>
-                              <ContextMenu>
-                                <items>
-                                  <MenuItem mnemonicParsing="false" onAction="#deleteMessage" text="Delete message" />
-                                </items>
-                              </ContextMenu>
-                           </contextMenu>
-                        </ListView>
-                        <Button layoutX="715.0" layoutY="578.0" mnemonicParsing="false" text="Update data" />
                      </children>
                   </AnchorPane>
               </content>

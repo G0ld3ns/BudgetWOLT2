@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
+@DiscriminatorValue("Restaurant")
 public class Restaurant extends User {
     //private String name;
     private String address;

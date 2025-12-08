@@ -1,5 +1,6 @@
 package com.example.budgetwolt2.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
+@DiscriminatorValue("Driver")
 public class Driver extends User{
     private LocalDate bDate;
     @Enumerated(EnumType.STRING)

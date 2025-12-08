@@ -119,13 +119,7 @@ public class MainForm implements Initializable {
     @FXML
     public Button deleteOrderID;
     
-    //chat
-    @FXML
-    public Tab chatTab;
-    @FXML
-    public ListView<Chat> allChat;
-    @FXML
-    public ListView<Review> chtMessagesList;
+
     @FXML
     public ComboBox<Restaurant> filterRestaurant;
 
@@ -304,9 +298,7 @@ public class MainForm implements Initializable {
             }
         });
         initActionColumn();
-        allChat.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldChat, newChat) -> loadChatMessages()
-        );
+
 
         orderFoodList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         orderFoodList.getSelectionModel()
@@ -318,9 +310,7 @@ public class MainForm implements Initializable {
                     }
                 });
 
-        allChat.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldChat, newChat) -> loadChatMessages()
-        );
+
 
 
     }
@@ -360,7 +350,7 @@ public class MainForm implements Initializable {
         if (currentUser instanceof BasicUser){
             tabPane.getTabs().remove(userTab);
             tabPane.getTabs().remove(menuTab);
-            tabPane.getTabs().remove(chatTab);
+
             updateOrderId.setDisable(true);
             deleteOrderID.setDisable(true);
             titleField.setDisable(true);
@@ -377,7 +367,7 @@ public class MainForm implements Initializable {
         }
             else if (currentUser instanceof Restaurant){
                 tabPane.getTabs().remove(userTab);
-                tabPane.getTabs().remove(chatTab);
+
 
             if (filterRestaurant != null) {
                 filterRestaurant.setVisible(false);
@@ -389,7 +379,7 @@ public class MainForm implements Initializable {
         else if (currentUser instanceof Driver){
             tabPane.getTabs().remove(userTab);
             tabPane.getTabs().remove(menuTab);
-            tabPane.getTabs().remove(chatTab);
+
             createOrderID.setDisable(true);
             updateOrderId.setDisable(true);
             deleteOrderID.setDisable(true);
@@ -488,14 +478,6 @@ public class MainForm implements Initializable {
                 );
                 restaurantList.setDisable(false);
             }
-        } else if (chatTab.isSelected()) {
-            allChat.getItems().clear();
-            chtMessagesList.getItems().clear();
-
-            allChat.getItems().addAll(
-                    customHibernate.getAllRecords(Chat.class)
-            );
-
         }
     }
 
@@ -697,34 +679,6 @@ public class MainForm implements Initializable {
 
     }
 
-    public void loadChatMessages() {
-        Chat selected = allChat.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            return;
-        }
-
-        chtMessagesList.getItems().clear();
-
-        EntityManager em = entityManagerFactory.createEntityManager();
-        try {
-            Chat chat = em.find(Chat.class, selected.getId());
-            if (chat == null) {
-                return;
-            }
-
-            List<Review> messages = em.createQuery(
-                            "select r from Review r " +
-                                    "where r.chat = :chat " +
-                                    "order by r.dateCreated, r.id",
-                            Review.class
-                    ).setParameter("chat", chat)
-                    .getResultList();
-
-            chtMessagesList.getItems().addAll(messages);
-        } finally {
-            em.close();
-        }
-    }
 
     public void deleteChat() {
     }
