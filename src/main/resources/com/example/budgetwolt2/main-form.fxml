@@ -11,6 +11,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="656.0" prefWidth="1108.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.budgetwolt2.fxControllers.MainForm">
    <children>
@@ -41,6 +42,12 @@
                           </columns>
                         </TableView>
                         <Button layoutX="14.0" layoutY="549.0" mnemonicParsing="false" onAction="#openUserForm" text="Create new user" />
+                        <ComboBox fx:id="nameFilter" layoutX="213.0" layoutY="562.0" onAction="#filterUsers" prefWidth="150.0" promptText="Name" />
+                        <ComboBox fx:id="surnameFilter" layoutX="382.0" layoutY="562.0" onAction="#filterUsers" prefWidth="150.0" promptText="Surname" />
+                        <ComboBox fx:id="loginFilter" layoutX="554.0" layoutY="562.0" onAction="#filterUsers" prefWidth="150.0" promptText="Login" />
+                        <ComboBox fx:id="typeFilter" layoutX="721.0" layoutY="562.0" onAction="#filterUsers" prefWidth="150.0" promptText="User Type" />
+                        <Button layoutX="888.0" layoutY="562.0" mnemonicParsing="false" onAction="#resetFilters" text="Reset Filters" />
+                        <Text layoutX="213.0" layoutY="554.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filters" />
                      </children>
                   </AnchorPane>
             </content>

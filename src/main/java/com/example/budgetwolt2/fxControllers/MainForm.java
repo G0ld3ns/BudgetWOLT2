@@ -122,6 +122,14 @@ public class MainForm implements Initializable {
 
     @FXML
     public ComboBox<Restaurant> filterRestaurant;
+    @FXML
+    public ComboBox<String> nameFilter;
+    @FXML
+    public ComboBox<String> surnameFilter;
+    @FXML
+    public ComboBox<String> loginFilter;
+    @FXML
+    public ComboBox<String> typeFilter;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -429,6 +437,25 @@ public class MainForm implements Initializable {
                 data.add(p);
             }
             userTable.getItems().addAll(data);
+            nameFilter.getItems().clear();
+            surnameFilter.getItems().clear();
+            loginFilter.getItems().clear();
+            typeFilter.getItems().clear();
+
+            for (UserTableParameters p : data) {
+                if (p.getName() != null && !nameFilter.getItems().contains(p.getName())) {
+                    nameFilter.getItems().add(p.getName());
+                }
+                if (p.getSurname() != null && !surnameFilter.getItems().contains(p.getSurname())) {
+                    surnameFilter.getItems().add(p.getSurname());
+                }
+                if (p.getLogin() != null && !loginFilter.getItems().contains(p.getLogin())) {
+                    loginFilter.getItems().add(p.getLogin());
+                }
+                if (p.getUserType() != null && !typeFilter.getItems().contains(p.getUserType())) {
+                    typeFilter.getItems().add(p.getUserType());
+                }
+            }
         } else if (oerderTab.isSelected()) {
             clearAllOrderFields();
             baseOrders = getFoodOrders();
@@ -714,13 +741,48 @@ public class MainForm implements Initializable {
     }
 
     public void resetFilters() {
+        if (userTab.isSelected()) {
+            nameFilter.getSelectionModel().clearSelection();
+            surnameFilter.getSelectionModel().clearSelection();
+            loginFilter.getSelectionModel().clearSelection();
+            typeFilter.getSelectionModel().clearSelection();
+
+            // show all users again
+            userTable.getItems().setAll(data);
+            return;
+        }
+
+        // existing order-filters reset
         filterStatus.getSelectionModel().clearSelection();
         filterClients.getSelectionModel().clearSelection();
         if (filterRestaurant != null) {
             filterRestaurant.getSelectionModel().clearSelection();
         }
-
-        // reload whole Orders tab state
         reloadTableData();
+    }
+
+    public void filterUsers() {
+        // base list is 'data'
+        if (data == null || data.isEmpty()) {
+            return;
+        }
+
+        String selectedName    = nameFilter.getValue();
+        String selectedSurname = surnameFilter.getValue();
+        String selectedLogin   = loginFilter.getValue();
+        String selectedType    = typeFilter.getValue();
+
+        List<UserTableParameters> filtered = data.stream()
+                .filter(u -> selectedName == null    || selectedName.isBlank()
+                        || selectedName.equals(u.getName()))
+                .filter(u -> selectedSurname == null || selectedSurname.isBlank()
+                        || selectedSurname.equals(u.getSurname()))
+                .filter(u -> selectedLogin == null   || selectedLogin.isBlank()
+                        || selectedLogin.equals(u.getLogin()))
+                .filter(u -> selectedType == null    || selectedType.isBlank()
+                        || selectedType.equals(u.getUserType()))
+                .toList();
+
+        userTable.getItems().setAll(filtered);
     }
 }
