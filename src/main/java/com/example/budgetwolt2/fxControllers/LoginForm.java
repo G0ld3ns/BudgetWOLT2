@@ -1,6 +1,8 @@
 package com.example.budgetwolt2.fxControllers;
 
 import com.example.budgetwolt2.hibernateControl.CustomHibernate;
+import com.example.budgetwolt2.model.BasicUser;
+import com.example.budgetwolt2.model.Driver;
 import com.example.budgetwolt2.model.User;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -27,6 +29,14 @@ public class LoginForm {
         CustomHibernate customHibernate = new CustomHibernate(entityManagerFactory);
         User user = customHibernate.getUserByUsername(loginField.getText(), passwordField.getText());
         if (user != null) {
+            if (user instanceof BasicUser || user instanceof Driver) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Login not allowed");
+                alert.setHeaderText("This account type cannot use the desktop app");
+                alert.setContentText("Clients and drivers can only use the mobile application.");
+                alert.showAndWait();
+                return; // do NOT open main window
+            }
 
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/budgetwolt2/main-form.fxml"));
