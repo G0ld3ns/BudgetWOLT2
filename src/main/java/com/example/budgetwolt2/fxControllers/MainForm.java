@@ -130,6 +130,8 @@ public class MainForm implements Initializable {
     public ComboBox<String> loginFilter;
     @FXML
     public ComboBox<String> typeFilter;
+    @FXML
+    public ListView<String> orderItemsList;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -625,7 +627,19 @@ public class MainForm implements Initializable {
                 .filter(r -> r == selectedOrder.getOrderStatus())
                 .findFirst()
                 .ifPresent(v -> orderStatusField.getSelectionModel().select(v));
+        orderItemsList.getItems().clear();
+
+
+        if (selectedOrder.getCuisineList() != null) {
+            for (Cuisine c : selectedOrder.getCuisineList()) {
+                String line = c.getName() + " - " +
+                        (c.getPrice() != null ? c.getPrice() : 0) + "€";
+                orderItemsList.getItems().add(line);
+            }
+        }
        // disableFoodOrderFields();
+
+
     }
 
     private void disableFoodOrderFields () {

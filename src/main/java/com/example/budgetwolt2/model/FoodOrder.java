@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.query.Order;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,8 +25,13 @@ public class FoodOrder {
     private Double price;
     @ManyToOne
     private BasicUser buyer;
-    @ManyToMany
-    private List<Cuisine> cuisineList;
+    @ManyToMany(fetch = FetchType.EAGER)  // IMPORTANT: EAGER so JavaFX can read it
+    @JoinTable(
+            name = "foodorder_cuisinelist",
+            joinColumns = @JoinColumn(name = "orderList_id"),
+            inverseJoinColumns = @JoinColumn(name = "cuisineList_id")
+    )
+    private List<Cuisine> cuisineList = new ArrayList<>();
     @OneToOne
     private Chat chat;
     @ManyToOne
